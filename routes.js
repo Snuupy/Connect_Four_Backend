@@ -7,18 +7,7 @@ var User = models.User;
 var Message = models.Message;
 var _ = require('underscore');
 var multer = require('multer');
-var multerS3 = require('multer-s3');
 
-
-var upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: 'horizons-demo',
-    key: function (req, file, cb) {
-      cb(null, Date.now().toString());
-    }
-  })
-});
 
 module.exports = function (passport) {
   var router = express.Router();
