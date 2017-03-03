@@ -28,6 +28,7 @@ module.exports = function (passport) {
   }));
 
   router.post('/register', function(req, res, next) {
+
     var params = _.pick(req.body, ['username', 'password']);
     bcrypt.genSalt(10, function(err, salt) {
       bcrypt.hash(params.password, salt, function(err, hash) {

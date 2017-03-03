@@ -120,4 +120,7 @@ app.use(function(err, req, res, next) {
   res.send("Error: " + err.message);
 });
 
+
+app.listen('3000');
+
 module.exports = app;
