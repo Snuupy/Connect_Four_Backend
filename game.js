@@ -1,5 +1,4 @@
 var _ = require('underscore');
-var persist = require('./persist');
 // var readGame = false;
 
 var Player = function(username, id, symbol){
@@ -48,7 +47,7 @@ Game.prototype.addPlayer = function(username, id){
   }
 }
 
-Game.prototype.nextPlayer(){
+Game.prototype.nextPlayer = function(){
   if(!this.currentTurn){
     this.currentTurn = this.player1;
   }else if(this.currentTurn.id === this.player1.id){
@@ -146,7 +145,7 @@ Game.prototype.hasWon = function(playerId, rowNum, colNum){
     // top-left to bottom-right - red diagonals
   for(var colStart = 1; colStart < (7 - 4); rowStart++){
       count = 0;
-      int row, col;
+      var row, col;
       for(var row = 0, col = colStart; row < 6 && col < 7; row++, col++ ){
           if(gridTable[row][col] == currentSymbol){
               count++;
@@ -160,7 +159,7 @@ Game.prototype.hasWon = function(playerId, rowNum, colNum){
   return false;
 }
 
-Game.prototype.completeGame(function(){
+Game.prototype.completeGame = function(){
   if(!this.isStarted){
     throw "Game hasn't started yet.";
   }else{
@@ -171,7 +170,7 @@ Game.prototype.completeGame(function(){
       this.isCompleted = true;
     }
   }
-});
+}
 
 /*
 Insert player symbol into a specific columns' lowest available row.

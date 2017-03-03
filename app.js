@@ -125,7 +125,7 @@ app.use(function(err, req, res, next) {
 });
 
 
-//SOCKET STUFF
+//SOCKET STUFF and GAME HANDLER
 var Game = require('./game');
 var game = new Game();
 
