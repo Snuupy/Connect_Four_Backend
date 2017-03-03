@@ -53,6 +53,15 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+io.on('connect', onConnect);
+
+function onConnect(socket){
+
+  // sending to the client
+  socket.emit('hello', 'can you hear me?', 1, 2, 'abc');
+
+};
+
 passport.serializeUser(function(user, done) {
   done(null, user._id);
 });
