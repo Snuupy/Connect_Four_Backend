@@ -8,9 +8,12 @@ var Message = models.Message;
 var _ = require('underscore');
 var multer = require('multer');
 
-
 module.exports = function (passport) {
   var router = express.Router();
+
+  router.get('/', function(req, res) {
+    res.send("Hello");
+  });
 
   /* Authentication routes */
 
@@ -28,6 +31,7 @@ module.exports = function (passport) {
   }));
 
   router.post('/register', function(req, res, next) {
+    console.log(req.body);
     var params = _.pick(req.body, ['username', 'password']);
     bcrypt.genSalt(10, function(err, salt) {
       bcrypt.hash(params.password, salt, function(err, hash) {
