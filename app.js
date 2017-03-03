@@ -204,8 +204,8 @@ io.on('connection', function(socket){
       game.completeGame();
       socket.emit('gameHasEnded', 'The game is now ended.');
 
-      console.log('WINNER!!!');
-      console.log(this.winner.username);
+      console.log('WINNER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+      console.log(game.winner.username);
     }
 
 
