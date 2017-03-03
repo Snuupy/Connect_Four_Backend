@@ -124,5 +124,52 @@ app.use(function(err, req, res, next) {
   res.send("Error: " + err.message);
 });
 
+
+//SOCKET STUFF
+var Game = require('./game');
+var game = new Game();
+
+
+io.on('connection', function(socket){
+
+  socket.emit('username', false);
+
+  socket.on('start', function(data){
+    try{
+      game.startGame();
+
+    }catch(e){
+      socket.emit('message', 'Cannot start game yet!');
+      return console.error(e);
+    }
+    //Otherwise, emit a start event and broadcast a start event to all clients
+    socket.emit('start', 'starting game');
+  });
+
+  socket.on('insertToken', function(colNum, playerSym){
+
+    try{
+      // Will return true if player won the game; false if he hasn't won yet
+      var res = game.insertToken(colNum, playerSym, playerId);
+    }catch(e){
+      socket.emit('message', e.message);
+      return console.log(e);
+    }
+
+    // socket.emit('insertToken', res);
+
+    // if player has won the game
+    if(res){
+      game.completeGame();
+      socket.emit('gameHasEnded', 'The game is now ended.');
+    }
+
+  });
+
+
+})
+
+
+
 server.listen('3000');
 module.exports = {app: app, server: server};
