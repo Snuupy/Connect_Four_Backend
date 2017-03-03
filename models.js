@@ -6,8 +6,8 @@ var findOrCreate = require('mongoose-findorcreate');
 var userSchema = mongoose.Schema({
   username: {
     type: String,
-    required: true,
-    unique: true
+    required: true
+
   },
   password: {
     type: String,
@@ -19,7 +19,6 @@ var userSchema = mongoose.Schema({
 });
 
 var gameBoardSchema = mongoose.Schema({
-
   board: {
     type: [[]],
     required: true
