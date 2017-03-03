@@ -15,6 +15,19 @@ var Game = function(){
   this.player2 = Player;
   this.numPlayers = 0;
   this.isCompleted = false;
+  this.winner = null;
+}
+
+Game.prototype.getPlayerSymbol = function(playerId){
+
+  if(this.player1.id === playerId){
+    return this.player1.playerSymbol;
+  }else if(this.player2.id === playerId){
+    return this.player2.playerSymbol;
+  }else{
+    throw "That player is not a part of the game.";
+  }
+
 }
 
 Game.prototype.addPlayer = function(username, id){
@@ -37,11 +50,19 @@ Game.prototype.addPlayer = function(username, id){
       var newPlayer = new Player(username, id, 1);
       this.player1 = newPlayer;
       this.numPlayers++;
+      console.log(username);
+      console.log(id);
+      console.log('*******************');
+      console.log(newPlayer.username);
+      console.log(this.player1.username);
       return newPlayer.id;
     }else{
       var newPlayer = new Player(username, id, 2);
       this.player2 = newPlayer;
       this.numPlayers++;
+      console.log('&&&&&&&&&&&&&&&&&&&');
+      console.log(newPlayer.username);
+      console.log(this.player2.username);
       return newPlayer.id;
     }
   }
@@ -109,6 +130,7 @@ Game.prototype.hasWon = function(playerId, rowNum, colNum){
     }
 
     if(count >= 4){
+      this.winner = currentPlayer;
       return true;
     }
   }
@@ -122,6 +144,10 @@ Game.prototype.hasWon = function(playerId, rowNum, colNum){
       count = 0;
     }
     if(count >= 4){
+      console.log('Hit the winner the check!!!!!!!!!!!!!!!!!');
+      this.winner = currentPlayer;
+      console.log(this.winner);
+      console.log(currentPlayer);
       return true;
     }
   }
@@ -134,6 +160,7 @@ Game.prototype.hasWon = function(playerId, rowNum, colNum){
       if(this.board[j][col] === currentSymbol){
         count++;
         if(count >= 4){
+          this.winner = currentPlayer;
           return true;
         }
       }else{
@@ -143,13 +170,16 @@ Game.prototype.hasWon = function(playerId, rowNum, colNum){
   }
 
     // top-left to bottom-right - red diagonals
-  for(var colStart = 1; colStart < (7 - 4); rowStart++){
+  for(var colStart = 1; colStart < (7 - 4); colStart++){
       count = 0;
       var row, col;
       for(var row = 0, col = colStart; row < 6 && col < 7; row++, col++ ){
-          if(gridTable[row][col] == currentSymbol){
+          if(this.board[row][col] == currentSymbol){
               count++;
-              if(count >= 4) return true;
+              if(count >= 4){
+                this.winner = currentPlayer;
+                return true;
+              }
           }
           else {
               count = 0;
@@ -163,7 +193,7 @@ Game.prototype.completeGame = function(){
   if(!this.isStarted){
     throw "Game hasn't started yet.";
   }else{
-    if(!this.isCompleted){
+    if(this.isCompleted){
       throw "Game has already ended";
     }else{
       //END THE GAME
@@ -173,10 +203,20 @@ Game.prototype.completeGame = function(){
 }
 
 /*
-Insert player symbol into a specific columns' lowest available row.
-Return true if successful and false otherwise
+*Insert player symbol into a specific columns' lowest available row.
+*Changes turn for next player
+*Return true if successful and false otherwise
 */
 Game.prototype.insertToken = function(colNum, playerSymbol, playerId){
+
+  var currentTurnId = this.currentTurn.id;
+
+  if(currentTurnId !== playerId){
+    throw "It is not your turn!";
+  }
+
+  //Change the turn for the next time around
+  this.nextPlayer();
 
   var insertTokenSuccess = false;
   var rowNum;
@@ -186,6 +226,7 @@ Game.prototype.insertToken = function(colNum, playerSymbol, playerId){
       this.board[i][colNum] = playerSymbol;
       insertTokenSuccess = true;
       rowNum = i;
+      break;
     }
   }
 
@@ -199,7 +240,6 @@ Game.prototype.insertToken = function(colNum, playerSymbol, playerId){
   }
 
   return hasWon;
-
 }
 
 module.exports = Game;

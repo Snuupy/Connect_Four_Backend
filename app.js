@@ -132,12 +132,26 @@ var game = new Game();
 
 io.on('connection', function(socket){
 
-  socket.emit('username', false);
+  // socket.emit('username', false);
 
-  socket.on('start', function(data){
+  socket.on('addPlayer', function(data){
+
+    console.log("11111111");
+    console.log(data);
+
+    var res = game.addPlayer(data.username, data.id);
+
+    console.log("222222");
+    console.log(res);
+
+  });
+
+  socket.on('startGame', function(data){
+    // console.log('11111111');
+    // console.log(data);
     try{
+      console.log('333333');
       game.startGame();
-
     }catch(e){
       socket.emit('message', 'Cannot start game yet!');
       return console.error(e);
@@ -146,15 +160,42 @@ io.on('connection', function(socket){
     socket.emit('start', 'starting game');
   });
 
-  socket.on('insertToken', function(colNum, playerSym){
+  socket.on('getGameBoard', function(data){
+
+    console.log('44444444');
+    console.log(game.board);
+    socket.emit('sendGameBoard', game.board);
+
+  });
+
+  socket.on('insertToken', function(data){
+
+    var colNum = data.colNum;
+    var playerId = data.id;
+
+    var playerSymbol;
+
+    try{
+      console.log('5555555555');
+      playerSymbol = game.getPlayerSymbol(playerId);
+    }catch(e){
+      socket.emit('error', e.message);
+    }
+
+    console.log('66666666666');
 
     try{
       // Will return true if player won the game; false if he hasn't won yet
-      var res = game.insertToken(colNum, playerSym, playerId);
+      console.log('777777777777');
+      var res = game.insertToken(colNum, playerSymbol, playerId);
     }catch(e){
       socket.emit('message', e.message);
       return console.log(e);
     }
+
+    console.log('88888888888888');
+    console.log(res);
+    console.log(game.board);
 
     // socket.emit('insertToken', res);
 
@@ -162,7 +203,12 @@ io.on('connection', function(socket){
     if(res){
       game.completeGame();
       socket.emit('gameHasEnded', 'The game is now ended.');
+
+      console.log('WINNER!!!');
+      console.log(this.winner.username);
     }
+
+
 
   });
 
