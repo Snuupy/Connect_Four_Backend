@@ -8,9 +8,12 @@ var Message = models.Message;
 var _ = require('underscore');
 var multer = require('multer');
 
-
 module.exports = function (passport) {
   var router = express.Router();
+
+  router.get('/', function(req, res) {
+    res.send("Hello");
+  });
 
   /* Authentication routes */
 

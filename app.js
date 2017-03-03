@@ -12,6 +12,11 @@ var LocalStrategy = require('passport-local');
 var util = require('util');
 var flash = require('connect-flash');
 var bcrypt = require('bcrypt');
+var app = express();
+
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
 // var FacebookStrategy = require('passport-facebook');
 
 var models = require('./models');
@@ -26,7 +31,6 @@ REQUIRED_ENV.forEach(function(el) {
     throw new Error("Missing required env var " + el);
 });
 
-var app = express();
 var IS_DEV = app.get('env') === 'development';
 
 if (IS_DEV) {
@@ -120,7 +124,5 @@ app.use(function(err, req, res, next) {
   res.send("Error: " + err.message);
 });
 
-
-app.listen('3000');
-
-module.exports = app;
+server.listen('3000');
+module.exports = {app: app, server: server};
