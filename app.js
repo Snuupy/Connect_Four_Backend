@@ -140,7 +140,7 @@ var game = new Game();
 
 
 io.on('connection', function(socket){
-
+  console.log("connected");
   // socket.emit('username', false);
 
   socket.on('addPlayer', function(data){
@@ -153,6 +153,7 @@ io.on('connection', function(socket){
   socket.on('startGame', function(data){
     try{
       game.startGame();
+      console.log("starting game");
     }catch(e){
       socket.emit('message', 'Cannot start game yet!');
       return console.error(e);
