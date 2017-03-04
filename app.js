@@ -124,5 +124,80 @@ app.use(function(err, req, res, next) {
   res.send("Error: " + err.message);
 });
 
+
+//SOCKET STUFF and GAME HANDLER
+var Game = require('./game');
+var game = new Game();
+
+
+io.on('connection', function(socket){
+
+  // socket.emit('username', false);
+
+  socket.on('addPlayer', function(data){
+    console.log('Player added.');
+    var res = game.addPlayer(data.username, data.id);
+
+    socket.emit('newUserAdded', data.username);
+  });
+
+  socket.on('startGame', function(data){
+    try{
+      game.startGame();
+    }catch(e){
+      socket.emit('message', 'Cannot start game yet!');
+      return console.error(e);
+    }
+    //Otherwise, emit a start event and broadcast a start event to all clients
+    socket.emit('startGame', 'starting game');
+    socket.broadcast.emit('start', 'starting game');
+  });
+
+  socket.on('getGameBoard', function(data){
+    console.log('New board: ');
+    console.log(game.board);
+    socket.emit('sendGameBoard', game.board);
+    socket.broadcast.emit('sendGameBoard', game.board);
+
+  });
+
+  socket.on('insertToken', function(data){
+    var colNum = data.colNum;
+    var playerId = data.id;
+    var playerSymbol;
+
+    try{
+      playerSymbol = game.getPlayerSymbol(playerId);
+    }catch(e){
+      socket.emit('error', e.message);
+    }
+
+    try{
+      // Will return true if player won the game; false if he hasn't won yet
+      var res = game.insertToken(colNum, playerSymbol, playerId);
+    }catch(e){
+      socket.emit('message', e.message);
+      return console.log(e);
+    }
+
+    socket.emit('sendGameBoard', game.board);
+    socket.broadcast.emit('sendGameBoard', game.board);
+    console.log(res);
+    console.log(game.board);
+
+    // socket.emit('insertToken', res);
+    // if player has won the game
+    if(res){
+      game.completeGame();
+      socket.emit('gameHasEnded', 'The game is now ended.');
+      socket.broadcast.emit('gameHasEnded', 'The game is now ended.');
+      console.log('WINNER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+      console.log(game.winner.username);
+    }
+  });
+})
+
+
+
 server.listen('3000');
 module.exports = {app: app, server: server};
