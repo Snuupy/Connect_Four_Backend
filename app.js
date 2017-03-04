@@ -148,6 +148,7 @@ io.on('connection', function(socket){
     var res = game.addPlayer(data.username, data.id);
 
     socket.emit('newUserAdded', data.username);
+    socket.broadcast.emit('newUserAdded', data.username);
   });
 
   socket.on('startGame', function(data){
