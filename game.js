@@ -221,7 +221,7 @@ Game.prototype.insertToken = function(colNum, playerSymbol, playerId){
   var insertTokenSuccess = false;
   var rowNum;
 
-  for(var i=0; i<6; i++){
+  for(var i=5; i>=0; i--){
     if(this.board[i][colNum] === 0){
       this.board[i][colNum] = playerSymbol;
       insertTokenSuccess = true;

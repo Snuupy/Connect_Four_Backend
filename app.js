@@ -135,84 +135,66 @@ io.on('connection', function(socket){
   // socket.emit('username', false);
 
   socket.on('addPlayer', function(data){
-
-    console.log("11111111");
-    console.log(data);
-
+    console.log('Player added.');
     var res = game.addPlayer(data.username, data.id);
 
-    console.log("222222");
-    console.log(res);
-
+    socket.emit('newUserAdded', data.username);
   });
 
   socket.on('startGame', function(data){
-    // console.log('11111111');
-    // console.log(data);
     try{
-      console.log('333333');
       game.startGame();
     }catch(e){
       socket.emit('message', 'Cannot start game yet!');
       return console.error(e);
     }
     //Otherwise, emit a start event and broadcast a start event to all clients
-    socket.emit('start', 'starting game');
+    socket.emit('startGame', 'starting game');
+    socket.broadcast.emit('start', 'starting game');
   });
 
   socket.on('getGameBoard', function(data){
-
-    console.log('44444444');
+    console.log('New board: ');
     console.log(game.board);
     socket.emit('sendGameBoard', game.board);
+    socket.broadcast.emit('sendGameBoard', game.board);
 
   });
 
   socket.on('insertToken', function(data){
-
     var colNum = data.colNum;
     var playerId = data.id;
-
     var playerSymbol;
 
     try{
-      console.log('5555555555');
       playerSymbol = game.getPlayerSymbol(playerId);
     }catch(e){
       socket.emit('error', e.message);
     }
 
-    console.log('66666666666');
-
     try{
       // Will return true if player won the game; false if he hasn't won yet
-      console.log('777777777777');
       var res = game.insertToken(colNum, playerSymbol, playerId);
     }catch(e){
       socket.emit('message', e.message);
       return console.log(e);
     }
 
-    console.log('88888888888888');
+    socket.emit('sendGameBoard', game.board);
+    socket.broadcast.emit('sendGameBoard', game.board);
     console.log(res);
     console.log(game.board);
 
     // socket.emit('insertToken', res);
-
     // if player has won the game
     if(res){
       game.completeGame();
       socket.emit('gameHasEnded', 'The game is now ended.');
-
+      socket.broadcast.emit('gameHasEnded', 'The game is now ended.');
       console.log('WINNER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
       console.log(game.winner.username);
     }
-
-
-
   });
-
-
 })
 
 
